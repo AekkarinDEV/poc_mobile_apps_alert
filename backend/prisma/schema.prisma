@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(uuid())
+  username  String     @unique
+  password  String
+  role      String     // 'ADMIN' or 'USER'
+  teamId    String?
+  team      Team?      @relation(fields: [teamId], references: [id])
+  fcmTokens FcmToken[]
+}
+
+model Team {
+  id    String @id @default(uuid())
+  name  String
+  users User[]
+}
+
+model FcmToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
